@@ -32,12 +32,27 @@ const deleteEmp = async (req,res)=>{
     try{
         const emplId = req.params.emplId;
         if(!emplId){
+        
             return res.status(404).send({
                 success:"false",
                 message:"Pls provide id"
+            
             })
+            console.log("pls provide id....")
         }
-        await db.query('DELETE FROM Employees where empId = ?',[emplId])
+        const pool = await poolPromise;
+        const result =await pool
+        .request()
+        .input("emplId",emplId)
+        .query("DELETE FROM Employees where emp_id = @emplId")
+        // await pool.request().query('DELETE FROM Employees where empId = ?',[emplId])
+
+        if (result.rowsAffected[0] === 0) {
+          return res.status(404).send({
+            success: false,
+            message: "Employee not found",
+          });
+        }
         res.status(200).send({
             success:true,
             message:"Emp Delete Successfully.."
@@ -46,7 +61,7 @@ const deleteEmp = async (req,res)=>{
         console.log(error);
         res.status(500).send({
             success:'false',
-            message:'Data Not found for deleted'
+            message:'Error while deleting api'
         })
         
     }
@@ -55,4 +70,43 @@ const deleteEmp = async (req,res)=>{
     
 }
 
-module.exports = {getEmp,deleteEmp}
+const createEmp = async (req,res)=>{
+    try{
+        const {emp_id ,first_name,last_name, email, salary,department} = req.body;
+        if(emp_id|| !first_name || !last_name || !email || !salary || !department){
+
+            return res.status(400).send({
+                success:"false",
+                message:"Pls Provide All the fields"
+            })
+        }
+        const pool = await poolPromise;
+        await pool
+        .request()
+        .input("first_name",sql.VarChar,first_name)
+        .input("last_name", sql.VarChar,last_name)
+        .input("email",sql.VarChar,email)
+        .input("salary",sql.Decimal(10,2),salary)
+        .input("department", sql.VarChar,department)
+        .query(
+            "INSERT INTO Employees(first_name,last_name, email, salary,department)VALUES (@first_name, @last_name, @email, @salary, @department)"
+        )
+
+
+        
+       res.status(200).send({
+            success:"true",
+            message:'Emp Created Successfully..'
+        })
+
+    }catch(error){
+        console.error(error);
+        res.status(500).send({
+            success:false,
+            message:'Error Creating employee',
+            error:error.message,
+        });
+
+    }
+}
+module.exports = {getEmp,deleteEmp,createEmp}
