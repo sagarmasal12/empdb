@@ -18,7 +18,6 @@ const getEmp = async (req,res)=>{
             success:true,
             message:"Student Data Found Successfully...",
             data:data
-            
         })
     }catch(error){
         console.log(error)
