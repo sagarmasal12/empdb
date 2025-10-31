@@ -7,7 +7,9 @@ const myRoute = require("./routes/empRoute.js")
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin:"http://localhost:4209"
+}));
 
 app.get('/',(req,res)=>{
     console.log(req);
