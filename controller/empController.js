@@ -32,6 +32,7 @@ const deleteEmp = async (req,res)=>{
     try{
         const emplId = req.params.emplId;
         if(!emplId){
+            console.log("Pls provide id..")
         
             return res.status(404).send({
                 success:"false",
@@ -43,7 +44,7 @@ const deleteEmp = async (req,res)=>{
         const pool = await poolPromise;
         const result =await pool
         .request()
-        .input("emplId",emplId)
+        .input("emplId",sql.Int,emplId)
         .query("DELETE FROM Employees where emp_id = @emplId")
         // await pool.request().query('DELETE FROM Employees where empId = ?',[emplId])
 
@@ -72,8 +73,8 @@ const deleteEmp = async (req,res)=>{
 
 const createEmp = async (req,res)=>{
     try{
-        const {emp_id ,first_name,last_name, email, salary,department} = req.body;
-        if(emp_id|| !first_name || !last_name || !email || !salary || !department){
+        const {first_name,last_name, email, salary,department} = req.body;
+        if( !first_name || !last_name || !email || !salary || !department){
 
             return res.status(400).send({
                 success:"false",
