@@ -6,16 +6,20 @@ dotenv.config();
 const myRoute = require("./routes/empRoute.js")
 
 const app = express();
-app.use(express.json());
+
 app.use(cors({
-    origin:"http://localhost:4209"
+    origin:"http://localhost:4200"
 }));
+app.use(express.json());
 
 app.get('/',(req,res)=>{
-    console.log(req);
+    // console.log(req);
+    console.log("✅ Request received:", req.method, req.url);
+   
     res.send("Working Fine")
     
 });
+
 app.use(myRoute);
 
 const PORT = process.env.PORT
